@@ -2,28 +2,35 @@
 <?php
 $fronts = "arial";
 
-
+			$data_submit_check = 0 ;
 			$name=$email=$website=$gender=$comment="";
 			$errname=$erremail=$errweb=$errgender="";
 			
 				if($_SERVER["REQUEST_METHOD"] == "POST"){
 					
-					if(empty($name)){
+					if(empty($_POST['name'])){
 						$errname="<span style='color:red'>Name is Required</span>";
 					}else{
 						$name = validation($_POST['name']);
 					}
-					if(empty($email)){
+					if(empty($_POST['email'])){
 						$erremail = "<span style='color: red'>Email is Required</span>";
-					}else{
+					}elseif(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)){
+						$erremail = "<span style='color: red'>Invalid Email Format.</span>";
+						$data_submit_check =  1 ;
+					}
+					else{
 						$email = validation($_POST['email']);
 					}
-					if(empty($website)){
+					if(empty($_POST['website'])){
 						$errweb = "<span style='color: red'>Website is Required</span>";
+					}elseif(!filter_var($_POST['website'], FILTER_VALIDATE_URL)){
+						$errweb = "<span style='color: red'>Invalid website Format.</span>";
+						$data_submit_check=1;
 					}else{
 						$website = validation($_POST['website']);
 					}
-					if(empty($gender)){
+					if(empty($_POST['gender'])){
 						$errgender = "<span style='color:red'>Gender is Required</span>";
 					}else{
 						$gender = validation($_POST['gender']);
@@ -36,11 +43,19 @@ $fronts = "arial";
 					
 					$comment = validation($_POST['comment']);
 					
-					echo $name ."<br>";
-					echo $email ."<br>";
-					echo $website ."<br>";
-					echo $gender ."<br>";
-					echo $comment ."<br>";
+					if($data_submit_check == 0){
+						
+						echo "<span style='color:green'>You're data has been uploaded<br></span>";
+						
+						echo $name ."<br>";
+						echo $email ."<br>";
+						echo $website ."<br>";
+						echo $gender ."<br>";
+						echo $comment ."<br>";
+					}else{
+						echo "Please Filling the all Requirements<br>";
+					}
+					
 				}
 				
 				function validation($data){
@@ -95,15 +110,15 @@ $fronts = "arial";
 				<p style="color:red">* Required Field</p>
 					<tr>
 						<td>Name </td>
-						<td><input type="text" name="name" />*<?php echo $errname;?></td>
+						<td><input type="text" name="name" /><span style="color:red">*</span><?php echo $errname;?></td>
 					</tr>
 					<tr>
 						<td>Email </td>
-						<td><input type="email" name="email" />*<?php echo $erremail;?></td>
+						<td><input type="text" name="email" /><span style="color:red">*</span><?php echo $erremail;?></td>
 					</tr>
 					<tr>
 						<td>Website </td>
-						<td><input type="text" name="website" />*<?php echo $errweb?></td>
+						<td><input type="text" name="website" /><span style="color:red">*</span><?php echo $errweb?></td>
 					</tr>
 					<tr>
 						<td>Comment  </td>
@@ -114,7 +129,7 @@ $fronts = "arial";
 						<td>
 							<input type="radio" name="gender" value="female" />Female
 							<input type="radio" name="gender" value="male"/>Male
-							*<?php echo $errgender;?>
+							<span style="color:red">*</span><?php echo $errgender;?>
 						</td>
 					</tr>
 					<tr>
